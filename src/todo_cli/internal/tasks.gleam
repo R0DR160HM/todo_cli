@@ -17,12 +17,13 @@ pub type Task {
 }
 
 pub fn to_csv(task: Task) -> String {
-  case task.status {
-    Backlog -> task.id <> ";" <> task.description <> ";0\n"
-    Todo -> task.id <> ";" <> task.description <> ";1\n"
-    InProgress -> task.id <> ";" <> task.description <> ";2\n"
-    Done -> task.id <> ";" <> task.description <> ";3\n"
+  let status = case task.status {
+    Backlog -> "0"
+    Todo -> "1"
+    InProgress -> "2"
+    Done -> "3"
   }
+  task.id <> ";" <> task.description <> ";" <> status <> "\n"
 }
 
 pub fn create(description: String) -> Task {
