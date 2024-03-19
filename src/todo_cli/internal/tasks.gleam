@@ -29,18 +29,17 @@ pub fn to_csv(task: Task) -> String {
 pub fn create(description: String) -> Task {
   let assert Ok(id) = uuid.generate_v7()
   let task = Task(id, description, Backlog)
-  let abc =
+  case
     task
     |> to_csv
     |> simplifile.append(to: filepath)
-  case abc {
+  {
     Ok(_) -> task
     Error(_) -> {
       let assert Ok(_) = write("")
       create(description)
     }
   }
-  task
 }
 
 pub fn list() -> List(Task) {
@@ -116,10 +115,7 @@ fn parse(text: String) -> List(Task) {
   text
   |> string.split("\n")
   |> list.filter(fn(line) { line != "" })
-  |> list.map(fn(line) {
-    line
-    |> csv_to_task
-  })
+  |> list.map(csv_to_task)
 }
 
 fn csv_to_task(csv: String) -> Task {
