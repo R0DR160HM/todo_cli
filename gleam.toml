@@ -17,6 +17,7 @@ gleam_stdlib = "~> 0.34 or ~> 1.0"
 argv = "~> 1.0"
 simplifile = "~> 1.5"
 ids = "~> 0.12"
+colored = "~> 1.0"
 
 [dev-dependencies]
 gleeunit = "~> 1.0"

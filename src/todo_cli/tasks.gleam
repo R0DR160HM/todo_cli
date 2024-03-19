@@ -1,7 +1,9 @@
 import gleam/list
 import gleam/string
+import gleam/io
 import ids/uuid
 import simplifile
+import colored
 
 const filepath = "tasks.csv"
 
@@ -137,21 +139,33 @@ fn persist_all(tasks: List(Task)) {
 }
 
 fn persist_all_internal(tasks: List(Task)) {
-  let result =
-    tasks
-    |> list.pop(fn(_) { True })
-  case result {
-    Ok(#(task, remaining)) -> {
+  case tasks {
+    [task, ..remaining] -> {
       let assert Ok(_) =
         task
         |> to_csv
         |> simplifile.append(to: filepath)
       persist_all_internal(remaining)
     }
-    Error(_) -> Nil
+    _ -> Nil
   }
 }
 
-pub fn read(task: Task) {
-  task.id <> ": " <> task.description
+pub fn print(task: Task) {
+  {
+    task.id
+    |> status_color(task.status)
+    <> " "
+    <> task.description
+  }
+  |> io.println
+}
+
+pub fn status_color(status: Status) {
+  case status {
+    Backlog -> colored.cyan
+    Todo -> colored.yellow
+    InProgress -> colored.blue
+    Done -> colored.green
+  }
 }

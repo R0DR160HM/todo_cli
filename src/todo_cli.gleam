@@ -1,8 +1,8 @@
 import gleam/io
 import gleam/list
 import argv
-import todo_cli/internal/tasks
-import todo_cli/internal/list_utils
+import todo_cli/tasks
+import todo_cli/list_utils
 
 pub fn main() {
   case argv.load().arguments {
@@ -45,7 +45,7 @@ fn downgrade_item(id_code: String) {
 
 fn view_item(id_code: String) {
   tasks.get(id_code)
-  |> io.debug
+  |> tasks.print
   Nil
 }
 
@@ -67,21 +67,22 @@ fn help() {
 }
 
 fn print() {
+  io.println("\n\n\n")
   tasks.list()
   |> print_internal(
-    "------------------------------------- Anotações -------------------------------------",
+    "------------------------------------- ANOTAÇÕES -------------------------------------",
     tasks.Backlog,
   )
   |> print_internal(
-    "-------------------------------------- A fazer --------------------------------------",
+    "-------------------------------------- A FAZER --------------------------------------",
     tasks.Todo,
   )
   |> print_internal(
-    "------------------------------------ Em andamento -----------------------------------",
+    "------------------------------------ EM ANDAMENTO -----------------------------------",
     tasks.InProgress,
   )
   |> print_internal(
-    "-------------------------------------- Feitas ---------------------------------------",
+    "-------------------------------------- FEITAS ---------------------------------------",
     tasks.Done,
   )
   Nil
@@ -92,13 +93,17 @@ fn print_internal(
   title: String,
   status: tasks.Status,
 ) -> List(tasks.Task) {
-  io.println("\n" <> title)
+  { "\n" <> title <> "\n" }
+  |> tasks.status_color(status)
+  |> io.println
+
   my_tasks
   |> list.filter(fn(task) { task.status == status })
   |> list.each(fn(task) {
     task
-    |> tasks.read
-    |> io.println
+    |> tasks.print
   })
+
+  io.println("")
   my_tasks
 }
