@@ -69,22 +69,10 @@ fn help() {
 fn print() {
   io.println("\n\n\n")
   tasks.list()
-  |> print_internal(
-    "------------------------------------- ANOTAÇÕES -------------------------------------",
-    tasks.Backlog,
-  )
-  |> print_internal(
-    "-------------------------------------- A FAZER --------------------------------------",
-    tasks.Todo,
-  )
-  |> print_internal(
-    "------------------------------------ EM ANDAMENTO -----------------------------------",
-    tasks.InProgress,
-  )
-  |> print_internal(
-    "-------------------------------------- FEITAS ---------------------------------------",
-    tasks.Done,
-  )
+  |> print_internal("ANOTAÇÕES", tasks.Backlog)
+  |> print_internal("A FAZER", tasks.Todo)
+  |> print_internal("EM ANDAMENTO", tasks.InProgress)
+  |> print_internal("FEITAS", tasks.Done)
   Nil
 }
 
