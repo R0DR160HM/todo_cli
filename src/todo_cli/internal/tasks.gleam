@@ -10,8 +10,6 @@ pub type Status {
   Todo
   InProgress
   Done
-
-  Empty
 }
 
 pub type Task {
@@ -24,7 +22,6 @@ pub fn to_csv(task: Task) -> String {
     Todo -> task.id <> ";" <> task.description <> ";1\n"
     InProgress -> task.id <> ";" <> task.description <> ";2\n"
     Done -> task.id <> ";" <> task.description <> ";3\n"
-    Empty -> ""
   }
 }
 
@@ -34,7 +31,7 @@ pub fn create(description: String) -> Task {
   let abc =
     task
     |> to_csv
-    |> simplifile.append(filepath)
+    |> simplifile.append(to: filepath)
   case abc {
     Ok(_) -> task
     Error(_) -> {
@@ -46,7 +43,7 @@ pub fn create(description: String) -> Task {
 }
 
 pub fn list() -> List(Task) {
-  case simplifile.read(filepath) {
+  case simplifile.read(from: filepath) {
     Ok(text) -> parse(text)
     Error(_) -> {
       let assert Ok(_) = write("")
@@ -55,16 +52,13 @@ pub fn list() -> List(Task) {
   }
 }
 
-pub fn update_status(id: String, status: Status) -> Task {
+pub fn update_status(old_task: Task, status: Status) -> Task {
   let tasks = list()
-  let assert Ok(old_task) =
-    tasks
-    |> list.find(fn(task) { task.id == id })
-  let task = Task(id, old_task.description, status)
+  let task = Task(old_task.id, old_task.description, status)
   tasks
   |> list.map(fn(t) {
     case t.id {
-      identifier if identifier == id -> task
+      identifier if identifier == task.id -> task
       _ -> t
     }
   })
@@ -74,20 +68,19 @@ pub fn update_status(id: String, status: Status) -> Task {
 
 pub fn upgrade(task: Task) -> Task {
   case task.status {
-    Backlog -> update_status(task.id, Todo)
-    Todo -> update_status(task.id, InProgress)
-    InProgress -> update_status(task.id, Done)
-    Done | Empty -> task
+    Backlog -> update_status(task, Todo)
+    Todo -> update_status(task, InProgress)
+    InProgress -> update_status(task, Done)
+    Done -> task
   }
 }
 
 pub fn downgrade(task: Task) -> Task {
   case task.status {
     Backlog -> task
-    Todo -> update_status(task.id, Backlog)
-    InProgress -> update_status(task.id, Todo)
-    Done -> update_status(task.id, InProgress)
-    Empty -> task
+    Todo -> update_status(task, Backlog)
+    InProgress -> update_status(task, Todo)
+    Done -> update_status(task, InProgress)
   }
 }
 
@@ -107,7 +100,7 @@ pub fn delete(id: String) {
 
 pub fn close_all_done() {
   list()
-  |> list.filter(fn(task) { task.status == Done })
+  |> list.filter(fn(task) { task.status != Done })
   |> persist_all
   list()
 }
@@ -121,6 +114,7 @@ fn write(value: String) {
 fn parse(text: String) -> List(Task) {
   text
   |> string.split("\n")
+  |> list.filter(fn(line) { line != "" })
   |> list.map(fn(line) {
     line
     |> csv_to_task
@@ -130,18 +124,22 @@ fn parse(text: String) -> List(Task) {
 fn csv_to_task(csv: String) -> Task {
   let values =
     csv
-    |> string.split("\n")
+    |> string.split(";")
   case values {
     [id, description, "0"] -> Task(id, description, Backlog)
     [id, description, "1"] -> Task(id, description, Todo)
     [id, description, "2"] -> Task(id, description, InProgress)
     [id, description, "3"] -> Task(id, description, Done)
-    _ -> Task("", "", Empty)
+    _ -> panic("Invalid CSV")
   }
 }
 
 fn persist_all(tasks: List(Task)) {
   let assert Ok(_) = write("")
+  persist_all_internal(tasks)
+}
+
+fn persist_all_internal(tasks: List(Task)) {
   let result =
     tasks
     |> list.pop(fn(_) { True })
@@ -150,9 +148,13 @@ fn persist_all(tasks: List(Task)) {
       let assert Ok(_) =
         task
         |> to_csv
-        |> simplifile.append(filepath)
-      persist_all(remaining)
+        |> simplifile.append(to: filepath)
+      persist_all_internal(remaining)
     }
     Error(_) -> Nil
   }
+}
+
+pub fn read(task: Task) {
+  task.id <> ": " <> task.description
 }
