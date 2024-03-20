@@ -23,7 +23,7 @@ pub fn main() {
 
 fn add_item(description: String) -> Nil {
   tasks.create(description)
-  |> io.debug
+  |> tasks.print
   Nil
 }
 
@@ -50,7 +50,7 @@ fn view_item(id_code: String) {
 }
 
 fn close_item(id_code: String) {
-  tasks.delete(id_code)
+  let assert Ok(_) = tasks.delete(id_code)
   tasks.list()
   print()
   Nil
