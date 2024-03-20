@@ -4,6 +4,7 @@ import gleam/io
 import ids/uuid
 import simplifile
 import colored
+import todo_cli/list_utils
 
 const filepath = "tasks.csv"
 
@@ -134,22 +135,25 @@ fn csv_to_task(csv: String) -> Task {
 }
 
 fn persist_all(tasks: List(Task)) {
-  let assert Ok(_) = write("")
-  persist_all_internal(tasks)
+  let assert Ok(_) =
+    tasks
+    |> list.map(to_csv)
+    |> list_utils.join("\n")
+    |> write
 }
 
-fn persist_all_internal(tasks: List(Task)) {
-  case tasks {
-    [task, ..remaining] -> {
-      let assert Ok(_) =
-        task
-        |> to_csv
-        |> simplifile.append(to: filepath)
-      persist_all_internal(remaining)
-    }
-    _ -> Nil
-  }
-}
+// fn persist_all_internal(tasks: List(Task)) {
+//   case tasks {
+//     [task, ..remaining] -> {
+//       let assert Ok(_) =
+//         task
+//         |> to_csv
+//         |> simplifile.append(to: filepath)
+//       persist_all_internal(remaining)
+//     }
+//     _ -> Nil
+//   }
+// }
 
 pub fn print(task: Task) {
   {
