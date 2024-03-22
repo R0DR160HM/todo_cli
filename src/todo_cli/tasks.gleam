@@ -142,19 +142,6 @@ fn persist_all(tasks: List(Task)) {
     |> write
 }
 
-// fn persist_all_internal(tasks: List(Task)) {
-//   case tasks {
-//     [task, ..remaining] -> {
-//       let assert Ok(_) =
-//         task
-//         |> to_csv
-//         |> simplifile.append(to: filepath)
-//       persist_all_internal(remaining)
-//     }
-//     _ -> Nil
-//   }
-// }
-
 pub fn print(task: Task) {
   {
     task.id
