@@ -1,6 +1,5 @@
 *.beam
 *.ez
 tasks.csv
-todo_cli
 /build
 erl_crash.dump
