@@ -7,33 +7,39 @@ import colored
 
 pub fn main() {
   case argv.load().arguments {
-    ["list"] -> list_items()
-    ["info", ..id] | ["view", ..id] | ["see", ..id] -> {
+    //List
+    ["l" <> _] -> list_items()
+    //Info
+    ["i" <> _, ..id] -> {
       id
       |> list_utils.join(" ")
       |> view_item
     }
-    ["add", ..descriptions] -> {
+    //Add
+    ["a" <> _, ..descriptions] -> {
       descriptions
       |> list_utils.join(" ")
       |> add_item
     }
-    ["upgrade", ..id] -> {
+    //Upgrade
+    ["u" <> _, ..id] -> {
       id
       |> list_utils.join(" ")
       |> upgrade_item
     }
-    ["downgrade", ..id] -> {
+    //Downgrade
+    ["d" <> _, ..id] -> {
       id
       |> list_utils.join(" ")
       |> downgrade_item
     }
-    ["close", ..id] | ["delete", ..id] | ["remove", ..id] -> {
+    //Remove
+    ["r" <> _, ..id] -> {
       id
       |> list_utils.join(" ")
       |> close_item
     }
-    ["clean"] -> clean_items()
+    ["c" <> _] -> clean_items()
     _ -> help()
   }
 }
@@ -80,19 +86,23 @@ fn clean_items() {
 
 fn help() {
   io.println("----- COMMANDS -----")
-  print_help("list", "\t", "\tList all tasks.")
-  print_help("info", "task", "\tView a task.")
-  print_help("add", "description", "\tAdd a task.")
-  print_help("upgrade", "task", "\tUpgrade task to next stage.")
+  print_help("list", "\t", "List all tasks.")
+  print_help("info", "task", "View a task.")
+  print_help("add", "description", "Add a task.")
+  print_help("upgrade", "task", "Upgrade task to next stage.")
   print_help("downgrade", "task", "Downgrade task to previous stage.")
-  print_help("close", "task", "\tClose a task.")
-  print_help("clean", "\t", "\tClose all done tasks.")
+  print_help("remove", "task", "Close a task.")
+  print_help("clean", "\t", "Close all done tasks.")
   Nil
 }
 
 fn print_help(command: String, args: String, description: String) {
   io.println(
-    colored.cyan(command) <> " " <> colored.yellow(args) <> "\t" <> description,
+    colored.cyan(command)
+    <> " "
+    <> colored.yellow(args)
+    <> "\t\t"
+    <> description,
   )
 }
 
