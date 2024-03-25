@@ -8,15 +8,31 @@ import colored
 pub fn main() {
   case argv.load().arguments {
     ["list"] -> list_items()
-    ["info", id] | ["view", id] | ["see", id] -> view_item(id)
+    ["info", ..id] | ["view", ..id] | ["see", ..id] -> {
+      id
+      |> list_utils.join(" ")
+      |> view_item
+    }
     ["add", ..descriptions] -> {
       descriptions
       |> list_utils.join(" ")
       |> add_item
     }
-    ["upgrade", id] -> upgrade_item(id)
-    ["downgrade", id] -> downgrade_item(id)
-    ["close", id] | ["delete", id] | ["remove", id] -> close_item(id)
+    ["upgrade", ..id] -> {
+      id
+      |> list_utils.join(" ")
+      |> upgrade_item
+    }
+    ["downgrade", ..id] -> {
+      id
+      |> list_utils.join(" ")
+      |> downgrade_item
+    }
+    ["close", ..id] | ["delete", ..id] | ["remove", ..id] -> {
+      id
+      |> list_utils.join(" ")
+      |> close_item
+    }
     ["clean"] -> clean_items()
     _ -> help()
   }
@@ -65,11 +81,11 @@ fn clean_items() {
 fn help() {
   io.println("----- COMMANDS -----")
   print_help("list", "\t", "\tList all tasks.")
-  print_help("info", "task_id", "\tView a task.")
+  print_help("info", "task", "\tView a task.")
   print_help("add", "description", "\tAdd a task.")
-  print_help("upgrade", "task_id", "\tUpgrade task to next stage.")
-  print_help("downgrade", "task_id", "Downgrade task to previous stage.")
-  print_help("close", "task_id", "\tClose a task.")
+  print_help("upgrade", "task", "\tUpgrade task to next stage.")
+  print_help("downgrade", "task", "Downgrade task to previous stage.")
+  print_help("close", "task", "\tClose a task.")
   print_help("clean", "\t", "\tClose all done tasks.")
   Nil
 }

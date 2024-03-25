@@ -89,10 +89,27 @@ pub fn downgrade(task: Task) -> Task {
 
 pub fn get(id: String) -> Task {
   let tasks = list()
-  let assert Ok(task) =
+  let result =
     tasks
     |> list.find(fn(t) { t.id == id })
-  task
+  case result {
+    Ok(task) -> task
+    Error(_) -> get_by_description(tasks, id)
+  }
+}
+
+fn get_by_description(tasks: List(Task), description: String) -> Task {
+  let result =
+    tasks
+    |> list.find(fn(t) {
+      t.description
+      |> string.uppercase
+      |> string.contains(string.uppercase(description))
+    })
+  case result {
+    Ok(task) -> task
+    Error(_) -> panic("Task not found")
+  }
 }
 
 pub fn delete(id: String) {
