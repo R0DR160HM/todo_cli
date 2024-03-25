@@ -3,11 +3,12 @@ import gleam/list
 import argv
 import todo_cli/tasks
 import todo_cli/list_utils
+import colored
 
 pub fn main() {
   case argv.load().arguments {
-    [] | ["list"] -> list_items()
-    ["see", id] | ["view", id] | ["info", id] -> view_item(id)
+    ["list"] -> list_items()
+    ["info", id] | ["view", id] | ["see", id] -> view_item(id)
     ["add", ..descriptions] -> {
       descriptions
       |> list_utils.join(" ")
@@ -15,7 +16,7 @@ pub fn main() {
     }
     ["upgrade", id] -> upgrade_item(id)
     ["downgrade", id] -> downgrade_item(id)
-    ["close", id] | ["delete", id] -> close_item(id)
+    ["close", id] | ["delete", id] | ["remove", id] -> close_item(id)
     ["clean"] -> clean_items()
     _ -> help()
   }
@@ -62,8 +63,21 @@ fn clean_items() {
 }
 
 fn help() {
-  io.debug("")
+  io.println("----- COMMANDS -----")
+  print_help("list", "\t", "\tList all tasks.")
+  print_help("info", "task_id", "\tView a task.")
+  print_help("add", "description", "\tAdd a task.")
+  print_help("upgrade", "task_id", "\tUpgrade task to next stage.")
+  print_help("downgrade", "task_id", "Downgrade task to previous stage.")
+  print_help("close", "task_id", "\tClose a task.")
+  print_help("clean", "\t", "\tClose all done tasks.")
   Nil
+}
+
+fn print_help(command: String, args: String, description: String) {
+  io.println(
+    colored.cyan(command) <> " " <> colored.yellow(args) <> "\t" <> description,
+  )
 }
 
 fn print() {
