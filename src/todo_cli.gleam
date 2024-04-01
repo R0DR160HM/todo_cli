@@ -39,6 +39,7 @@ pub fn main() {
       |> list_utils.join(" ")
       |> close_item
     }
+    //Clean
     ["c" <> _] -> clean_items()
     _ -> help()
   }
