@@ -26,7 +26,7 @@ pub fn to_csv(task: Task) -> String {
     InProgress -> "2"
     Done -> "3"
   }
-  task.id <> ";" <> task.description <> ";" <> status <> "\n"
+  task.id <> ";" <> task.description <> ";" <> status
 }
 
 pub fn create(description: String) -> Task {

@@ -128,10 +128,7 @@ fn print_internal(
 
   my_tasks
   |> list.filter(fn(task) { task.status == status })
-  |> list.each(fn(task) {
-    task
-    |> tasks.print
-  })
+  |> list.each(fn(task) { tasks.print(task) })
 
   io.println("")
   my_tasks
