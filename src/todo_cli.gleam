@@ -122,7 +122,7 @@ fn print_internal(
   title: String,
   status: tasks.Status,
 ) -> List(tasks.Task) {
-  { "\n" <> title <> "\n" }
+  title
   |> tasks.status_color(status)
   |> io.println
 
